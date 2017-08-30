@@ -1,20 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-author: M.Vigneshwar
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
+M.Vigneshwar  
 
 
 ## Loading and preprocessing the data
-```{r echo=FALSE,results='hide',include=FALSE}
-#load the required libraries
-library(ggplot2)
-library(lubridate)
-library(dplyr)
-```
-```{r echo=TRUE}
+
+
+```r
 unzip("activity.zip",exdir = "./data") # unzip the files and extract to the data folder
 activity <- read.csv("./data/activity.csv")# read the dataset into activity dataframe
 activity$date<-ymd(activity$date) # convert the date variable as a date using ymd(lubridate pkg)
@@ -22,7 +13,8 @@ activity$date<-ymd(activity$date) # convert the date variable as a date using ym
 
 
 ## What is mean total number of steps taken per day?
-```{r echo = TRUE, warning = FALSE, fig.height = 5.5, fig.width = 8.5}
+
+```r
 # Group the activity df by date, find the total steps taken each day and store it in df1
 df1<-activity%>%
            group_by(date)%>%
@@ -36,16 +28,31 @@ ggplot(df1,aes(date))+
              y="Number of steps",
              title="Total Number of steps taken each Day",
              subtitle="Histogram")
+```
 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
+```r
 mean(df1$sum,na.rm = T) # Mean of the total number of steps taken each day
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 median(df1$sum,na.rm = T) # Median of the total number of steps taken each day
+```
+
+```
+## [1] 10765
 ```
 
 
 ## What is the average daily activity pattern?
 
-```{r echo=TRUE, warning = FALSE, fig.height = 5.5, fig.width = 8.5}
+
+```r
 # Group the activity dataframe by interval and summarise mean steps into Avg_steps column
 df2<-activity%>%
         group_by(interval)%>%
@@ -57,14 +64,42 @@ ggplot(df2,aes(interval,Avg_steps))+
              y="Average Steps Taken Each day", 
              title ="Average steps over 5 min interval each day", 
              subtitle="Time Series Plot")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
+
+```r
+ggsave("./Plot2.png")
+```
+
+```
+## Saving 8.5 x 5.5 in image
+```
+
+```r
 # Maximum of the mean steps in an interval
 df2[which.max(df2$Avg_steps),]
+```
 
+```
+## # A tibble: 1 x 2
+##   interval Avg_steps
+##      <int>     <dbl>
+## 1      835  206.1698
 ```
 
 ## Imputing missing values
-```{r echo=TRUE, warning = FALSE, fig.height = 5.5, fig.width = 8.5}
+
+```r
 apply(activity,2,function(x){sum(is.na(x))}) # To find the NA values
+```
+
+```
+##    steps     date interval 
+##     2304        0        0
+```
+
+```r
 # summary(activity) can also be used to view the number of NA values
 
 # Impute the missing values with the mean number of steps taken in that particular interval
@@ -86,9 +121,20 @@ ggplot(df3,aes(date))+
            subtitle="Histogram(Imputed Data)")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-5-1.png)<!-- -->
+
+```r
+ggsave("./Plot3.png")
+```
+
+```
+## Saving 8.5 x 5.5 in image
+```
+
 
 ## Are there differences in activity patterns between weekdays and weekends?
-```{r echo=TRUE,warning = FALSE, fig.height = 5.5, fig.width = 8.5}
+
+```r
 # Create a factor variable wday with levels weekend and weekday
 activity$wday <- ifelse(wday(activity$date) %in% c(1,7),"weekend","weekday")
 # Group by wday and interval variable and find the average number of steps taken in each interval for either weekday or weekend
@@ -102,5 +148,15 @@ ggplot(df4,aes(interval,avg_steps))+
       labs(x= "Interval", y= "Average steps taken each day",
            title ="Average steps over 5 min interval each day", 
              subtitle="Time Series Plot(Imputed Data)")
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png)<!-- -->
+
+```r
+ggsave("./Plot4.png")
+```
+
+```
+## Saving 8.5 x 5.5 in image
 ```
 
